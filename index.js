@@ -7,7 +7,6 @@ var del = require('del');
 var through = require('through2');
 
 function revDel(options, cb) {
-	var localOps = {};
 	if (!_.isObject(options)) {
 		options = { oldManifest: options };
 	}
@@ -15,7 +14,7 @@ function revDel(options, cb) {
 	// Useful when testing
 	options.delFn = options.delFn || del;
 	options.dest = options.dest || '.';
-	options.fileBase = options.fileBase || '';
+	options.fileBase = options.fileBase || false;
 
 	options.suppress = (options.suppress !== false);
 
@@ -26,9 +25,13 @@ function revDel(options, cb) {
 		var newManifest = getManifest(options.newManifest);
 		var oldFiles = getChanged(oldManifest, newManifest);
 
-		if (options.dest || localOps.base || options.fileBase) {
+		if (options.base || options.fileBase) {
 			oldFiles = _.map(oldFiles, function (file) {
-				return path.join(options.fileBase, options.dest || localOps.base, file);
+				var joinStr = options.dest || options.base;
+				if (options.fileBase) {
+					joinStr = path.join(joinStr, options.fileBase);
+				}
+				return path.join(joinStr, file);
 			});
 		}
 
@@ -37,8 +40,8 @@ function revDel(options, cb) {
 
 	// newManifest isn't specified, return a stream
 	return through.obj(function (file, enc, cb) {
-		if (!localOps.base && file.base) {
-			localOps.base = file.base;
+		if (!options.base && file.base) {
+			options.base = file.base;
 		}
 
 		if (options.oldManifest) {

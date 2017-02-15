@@ -154,3 +154,27 @@ it('should accept fileBase', function (cb) {
 	}));
 	stream.end();
 });
+
+it('should accept fileBase and dest', function (cb) {
+	var stream = revDel({
+		delFn: function (files, options, cb) {
+			cb(null, files);
+		},
+		fileBase: 'testbase',
+		dest: 'testdest',
+		oldManifest: 'test.json'
+	});
+
+	stream.on('data', function (file) {
+		file.revDeleted.length.should.equal(2);
+		file.revDeleted.should.eql(['testdest/testbase/foo-abc.js', 'testdest/testbase/world']);
+
+		cb();
+	});
+
+	stream.write(new File({
+		path: 'test.json',
+		contents: new Buffer(JSON.stringify(newManifest))
+	}));
+	stream.end();
+});
