@@ -25,7 +25,7 @@ function revDel(options, cb) {
 		var newManifest = getManifest(options.newManifest);
 		var oldFiles = getChanged(oldManifest, newManifest);
 
-		if (options.base || options.fileBase) {
+		if (options.base) {
 			oldFiles = _.map(oldFiles, function (file) {
 				var joinStr = options.dest;
 				if (options.fileBase) {
