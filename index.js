@@ -27,7 +27,7 @@ function revDel(options, cb) {
 
 		if (options.base || options.fileBase) {
 			oldFiles = _.map(oldFiles, function (file) {
-				var joinStr = options.dest || options.base;
+				var joinStr = options.dest;
 				if (options.fileBase) {
 					joinStr = path.join(joinStr, options.fileBase);
 				}
@@ -40,9 +40,7 @@ function revDel(options, cb) {
 
 	// newManifest isn't specified, return a stream
 	return through.obj(function (file, enc, cb) {
-		if (!options.base && file.base) {
-			options.base = file.base;
-		}
+		options.base = file.base;
 
 		if (options.oldManifest) {
 			options.oldManifest = getManifest(options.oldManifest, options.suppress);
